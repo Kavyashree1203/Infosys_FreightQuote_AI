@@ -61,4 +61,4 @@ FreightQuoteAI.ipynb
 ## Prediction Output
 ![Prediction Output Screenshot](word2vec1.png)
 
-(Add Screenshot Here)
+
