@@ -49,20 +49,16 @@ FreightQuoteAI.ipynb
 
 ---
 
-## Screenshots
+## Dataset
+![Dataset Screenshot](ws.png)
 
-### Dataset
+## Data Cleaning
+![Data Cleaning Screenshot](nlp.png)
 
-(Add Screenshot Here)
+## Model Training
+![Model Training Screenshot](word2vec.png)
 
-### Data Cleaning
-
-(Add Screenshot Here)
-
-### Model Training
-
-(Add Screenshot Here)
-
-### Prediction Output
+## Prediction Output
+![Prediction Output Screenshot](word2vec1.png)
 
 (Add Screenshot Here)
