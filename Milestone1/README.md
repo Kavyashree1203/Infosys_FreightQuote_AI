@@ -4,7 +4,7 @@
 
 ## About This Milestone
 
-This milestone builds a complete user authentication module for **Infosys FreightQuote** — a smart logistics quotation and authentication portal. It covers user signup, login, password recovery (via security question or email OTP), a session-protected user dashboard, and a separate admin dashboard, all built as a single Streamlit app and served publicly through ngrok while running inside Google Colab.
+This milestone builds a complete user authentication module for **Infosys FreightQuote** — a smart logistics quotation and authentication portal. It covers user signup, login, password recovery (via security question or email OTP), and a session-protected user dashboard, all built as a single Streamlit app and served publicly through ngrok while running inside Google Colab.
 
 ## Features Built
 
@@ -20,7 +20,6 @@ This milestone builds a complete user authentication module for **Infosys Freigh
   - Email must be shaped like `ab@cd.ef` (at least 2 letters before the `@`, at least 2 letters between the `@` and the dot, at least 2 letters after the final dot).
   - Password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special symbol. Confirm Password must match exactly.
 - **User Dashboard** — Welcomes the logged-in user by name, confirms JWT authentication, shows basic account details, and includes a Logout action that clears the session and returns to Login.
-- **Admin Dashboard** — A separate login using an admin username/password defined directly in code (not a signup account). Once logged in, it lists every registered user's username and email — password data is never displayed. It isn't linked in the navigation; it's reached only through a hidden URL flag (`?admin=1`) to keep it out of the public-facing UI.
 
 ## Tech Stack
 
@@ -35,10 +34,9 @@ This milestone builds a complete user authentication module for **Infosys Freigh
 | Secrets management | Google Colab Secrets |
 
 ## Project Structure
-
 ## How to Run
 
-1. Open `Milestone1.ipynb` in **Google Colab**.
+1. Open `INFOSYS.ipynb` in **Google Colab**.
 2. Set up the required secrets under **Colab Secrets** (key icon in the left sidebar), and toggle notebook access **on** for each:
 
    | Secret Name | Value |
@@ -50,7 +48,6 @@ This milestone builds a complete user authentication module for **Infosys Freigh
 
 3. Run all cells from top to bottom (**Runtime → Run all**, or restart the runtime first if re-running).
 4. The last cell prints a public **ngrok URL** — open it in your browser to use the app.
-5. To reach the Admin Dashboard, open the same URL with `?admin=1` appended, e.g. `https://your-ngrok-url/?admin=1`.
 
 ## Security Notes
 
@@ -60,25 +57,26 @@ This milestone builds a complete user authentication module for **Infosys Freigh
 
 ## Screenshots
 
-_Add screenshots to a `screenshots/` folder in this directory, then link them below (one below the other):_
-
 ### Login
-![Login](screenshots/login.png)
+![Login](Login%20page.png)
 
 ### Signup
-![Signup](screenshots/signup.png)
+![Signup](Sign%20page.png)
+
+### Forgot Password
+![Forgot Password](Forgot%20pass.png)
 
 ### Forgot Password — Security Question
-![Forgot Password - Security Question](screenshots/forgot-security-question.png)
+![Forgot Password - Security Question](Securty%20question.png)
 
 ### Forgot Password — Email OTP
-![Forgot Password - OTP](screenshots/forgot-otp.png)
+![Forgot Password - Email OTP](Forgot%20pass%20Email.png)
 
 ### OTP Email
-![OTP Email](screenshots/otp-email.png)
+![OTP Email](Email%20otp.png)
 
 ### User Dashboard
-![User Dashboard](screenshots/user-dashboard.png)
+![User Dashboard](User%20dashboard.png)
 
 ---
 *Infosys Springboard 7.0 — Batch 1 — Milestone 1*
