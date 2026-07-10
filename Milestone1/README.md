@@ -80,8 +80,5 @@ _Add screenshots to a `screenshots/` folder in this directory, then link them be
 ### User Dashboard
 ![User Dashboard](screenshots/user-dashboard.png)
 
-### Admin Dashboard
-![Admin Dashboard](screenshots/admin-dashboard.png)
-
 ---
 *Infosys Springboard 7.0 — Batch 1 — Milestone 1*
