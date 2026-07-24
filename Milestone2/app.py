@@ -64,8 +64,20 @@ def render_authenticated_shell(claims):
 
 
 token = st.session_state.auth_token
+token = st.session_state.auth_token
+
+# ---------- DEBUG ----------
+st.sidebar.markdown("### 🔍 Debug")
+st.sidebar.write("Token exists:", token is not None)
+
 claims = auth.verify_token(token) if token else None
 
+if claims:
+    st.sidebar.success("JWT Verified ✅")
+    st.sidebar.json(claims)
+else:
+    st.sidebar.error("JWT Verification Failed ❌")
+# ---------------------------
 if claims:
     render_authenticated_shell(claims)
     st.stop()
