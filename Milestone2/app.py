@@ -14,6 +14,7 @@ import ui_theme
 from ui_theme import apply_theme, render_header, render_nav, card_start, card_end, pw_strength_badge
 
 st.set_page_config(page_title="Infosys FreightQuote", layout="centered")
+st.write("Session:", st.session_state)
 db.init_db()
 apply_theme()
 
