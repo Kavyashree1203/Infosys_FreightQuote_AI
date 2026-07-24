@@ -106,6 +106,14 @@ if st.session_state.active_tab == "Login":
             if success:
                 st.session_state.auth_token = token
                 st.success(message)
+
+                # Debug
+                st.write("Generated Token:")
+                st.code(token)
+            
+                st.write("Decoded Claims:")
+                st.json(auth.verify_token(token))
+            
                 st.rerun()
             else:
                 st.markdown(f'<div class="fq-alert fq-alert-error">{message}</div>', unsafe_allow_html=True)
