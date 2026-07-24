@@ -1,0 +1,13 @@
+streamlit
+bcrypt
+PyJWT
+pandas
+numpy
+scikit-learn
+joblib
+kagglehub
+torch
+transformers
+bitsandbytes
+accelerate
+pyngrok
