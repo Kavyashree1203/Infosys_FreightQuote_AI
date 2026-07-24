@@ -14,7 +14,7 @@ import ui_theme
 from ui_theme import apply_theme, render_header, render_nav, card_start, card_end, pw_strength_badge
 
 st.set_page_config(page_title="Infosys FreightQuote", layout="centered")
-st.write("Session:", st.session_state)
+
 db.init_db()
 apply_theme()
 
@@ -65,23 +65,15 @@ def render_authenticated_shell(claims):
 
 
 token = st.session_state.auth_token
-token = st.session_state.auth_token
+token = st.session_state.get("auth_token")
 
-# ---------- DEBUG ----------
-st.sidebar.markdown("### 🔍 Debug")
-st.sidebar.write("Token exists:", token is not None)
-
-claims = auth.verify_token(token) if token else None
-
-if claims:
-    st.sidebar.success("JWT Verified ✅")
-    st.sidebar.json(claims)
-else:
-    st.sidebar.error("JWT Verification Failed ❌")
-# ---------------------------
-if claims:
-    render_authenticated_shell(claims)
-    st.stop()
+if token:
+    claims = auth.verify_token(token)
+    if claims:
+        render_authenticated_shell(claims)
+        st.stop()
+    else:
+        st.session_state.auth_token = None
 
 
 # ---------------------------------------------------------------------------
@@ -105,16 +97,8 @@ if st.session_state.active_tab == "Login":
         else:
             success, message, token = auth.attempt_login(identifier, password)
             if success:
-                st.session_state.auth_token = token
+                st.session_state["auth_token"] = token
                 st.success(message)
-
-                # Debug
-                st.write("Generated Token:")
-                st.code(token)
-            
-                st.write("Decoded Claims:")
-                st.json(auth.verify_token(token))
-            
                 st.rerun()
             else:
                 st.markdown(f'<div class="fq-alert fq-alert-error">{message}</div>', unsafe_allow_html=True)
