@@ -65,10 +65,22 @@ for key, default in [
 def render_auth_screens():
     ui_theme.render_brand_header()
 
-    tab1, tab2, tab3 = st.tabs(["Login", "Signup", "Forgot Password"])
+    if "auth_tab" not in st.session_state:
+        st.session_state.auth_tab = "Login"
+
+    col_a, col_b, col_c = st.columns(3)
+    for col, label in zip((col_a, col_b, col_c), ("Login", "Signup", "Forgot Password")):
+        with col:
+            is_active = st.session_state.auth_tab == label
+            if st.button(
+                label, key=f"auth_tab_{label}", use_container_width=True,
+                type="primary" if is_active else "secondary",
+            ):
+                st.session_state.auth_tab = label
+                st.rerun()
 
     # ---------------- Login ----------------
-    with tab1:
+    if st.session_state.auth_tab == "Login":
         ui_theme.card_start("User Login")
         st.markdown('<div class="fq-inner-box">', unsafe_allow_html=True)
         login_id = st.text_input("Username / Email *", key="login_id")
@@ -101,7 +113,7 @@ def render_auth_screens():
         ui_theme.card_end()
 
     # ---------------- Signup ----------------
-    with tab2:
+    elif st.session_state.auth_tab == "Signup":
         ui_theme.card_start("Create Account")
         st.markdown('<div class="fq-inner-box">', unsafe_allow_html=True)
         u = st.text_input("Username *", key="reg_username")
@@ -136,7 +148,7 @@ def render_auth_screens():
         ui_theme.card_end()
 
     # ---------------- Forgot Password ----------------
-    with tab3:
+    else:
         ui_theme.card_start("Forgot Password")
         st.markdown("Choose a recovery method:")
         method = st.radio(
