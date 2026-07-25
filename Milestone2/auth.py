@@ -9,6 +9,7 @@ import random
 import smtplib
 import ssl
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 
 import db
@@ -257,17 +258,76 @@ def generate_otp() -> str:
     return f"{random.randint(0, 999999):06d}"
 
 
+def _otp_email_html(otp_code: str) -> str:
+    digits_spaced = "  ".join(list(otp_code))
+    return f"""\
+<html>
+  <body style="margin:0; padding:24px; background-color:#0b0f1f; font-family: Arial, Helvetica, sans-serif;">
+    <div style="max-width:480px; margin:0 auto; background: linear-gradient(180deg, #11162b 0%, #0e1224 100%);
+                border:1px solid #2b3358; border-radius:14px; overflow:hidden;">
+      <div style="padding:26px 28px 20px 28px; text-align:center; border-bottom:1px solid #2b3358;">
+        <div style="color:#22d3ee; font-size:11px; font-weight:700; letter-spacing:2px; margin-bottom:10px;">
+          SECURITY NOTICE
+        </div>
+        <div style="color:#e8ecff; font-size:20px; font-weight:800;">
+          Infosys Intelligent Freight Quote
+        </div>
+        <div style="color:#9aa3c7; font-size:13px; margin-top:4px;">
+          Password Reset Verification
+        </div>
+      </div>
+      <div style="padding:28px 28px 8px 28px;">
+        <p style="color:#e8ecff; font-size:14px; margin:0 0 6px 0;">Hello,</p>
+        <p style="color:#c3c9e6; font-size:14px; line-height:1.6; margin:0 0 22px 0;">
+          Use the One-Time Password (OTP) below to reset your account password.
+        </p>
+        <div style="background-color:#141a33; border:1px solid #2b3358; border-radius:10px;
+                    text-align:center; padding:18px 12px; margin-bottom:16px;">
+          <span style="color:#22d3ee; font-size:30px; font-weight:800; letter-spacing:6px;">
+            {digits_spaced}
+          </span>
+        </div>
+        <p style="color:#9aa3c7; font-size:12px; text-align:center; margin:0 0 22px 0;">
+          This OTP will expire in 10 minutes
+        </p>
+        <hr style="border:none; border-top:1px solid #2b3358; margin:0 0 16px 0;">
+        <p style="color:#8890b5; font-size:11.5px; line-height:1.6; margin:0 0 22px 0;">
+          This OTP is valid for a single use only. If you did not request a password reset,
+          you can safely ignore this email — your account remains secure.
+        </p>
+      </div>
+      <div style="background-color:#0e1224; padding:14px 28px; text-align:center;
+                  border-top:1px solid #2b3358;">
+        <span style="color:#7a82a8; font-size:11px;">
+          Infosys Springboard 7.0 &middot; FreightQuote Authentication Portal
+        </span>
+      </div>
+    </div>
+  </body>
+</html>
+"""
+
+
 def send_otp_email(to_email: str, otp_code: str):
-    """Sends OTP via Gmail SMTP. Falls back to console print if creds missing."""
+    """Sends a branded HTML OTP email via Gmail SMTP. Falls back to console print if creds missing."""
     if not EMAIL_ID or not EMAIL_PASSWORD:
         print(f"[OTP FALLBACK - no email creds configured] OTP for {to_email}: {otp_code}")
         return True, "OTP generated (console fallback — no EMAIL_ID/EMAIL_PASSWORD secret set)."
 
     try:
-        msg = MIMEText(f"Your FreightQuote AI verification code is: {otp_code}\nThis code expires in 10 minutes.")
+        msg = MIMEMultipart("alternative")
         msg["Subject"] = "FreightQuote AI — OTP Verification"
         msg["From"] = EMAIL_ID
         msg["To"] = to_email
+
+        plain_body = (
+            f"Infosys Intelligent Freight Quote — Password Reset Verification\n\n"
+            f"Your OTP is: {otp_code}\n"
+            f"This OTP will expire in 10 minutes.\n\n"
+            f"If you did not request a password reset, you can safely ignore this email."
+        )
+        msg.attach(MIMEText(plain_body, "plain"))
+        msg.attach(MIMEText(_otp_email_html(otp_code), "html"))
 
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
