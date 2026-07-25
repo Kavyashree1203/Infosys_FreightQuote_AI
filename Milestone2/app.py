@@ -254,8 +254,8 @@ def render_agent1_pricing():
 
     distance_km = st.number_input("Distance (km)", 50.0, 15000.0, 5000.0)
     weight_kg = st.number_input("Weight (kg)", 10.0, 25000.0, 1000.0)
-    congestion_level = st.slider("Congestion level (0-1)", 0.0, 1.0, 0.5)
-    fuel_index = st.slider("Fuel index", 0.8, 1.6, 1.1)
+    congestion_level = st.number_input("Congestion level (0-1)", 0.0, 1.0, 0.5, step=0.01, format="%.2f")
+    fuel_index = st.number_input("Fuel index", 0.8, 1.6, 1.1, step=0.01, format="%.2f")
 
     if st.button("Predict Freight Cost"):
         import pandas as pd
@@ -281,8 +281,8 @@ def render_agent2_route():
     bundle = joblib.load(path)
     model, scaler, features = bundle["model"], bundle["scaler"], bundle["features"]
 
-    congestion = st.slider("Congestion", 0.0, 1.0, 0.6)
-    weather_risk = st.slider("Weather risk", 0.0, 1.0, 0.4)
+    congestion = st.number_input("Congestion", 0.0, 1.0, 0.6, step=0.01, format="%.2f")
+    weather_risk = st.number_input("Weather risk", 0.0, 1.0, 0.4, step=0.01, format="%.2f")
     canal_queue = st.checkbox("Canal queue present?")
     distance_km = st.number_input("Distance (km)", 50.0, 15000.0, 6000.0)
 
@@ -312,8 +312,8 @@ def render_agent3_carrier():
     model, scaler, features = bundle["model"], bundle["scaler"], bundle["features"]
 
     carrier_name = st.text_input("Carrier name", "Maersk")
-    punctuality_rate = st.slider("Punctuality rate", 0.5, 1.0, 0.94)
-    docs_compliance = st.slider("Docs compliance", 0.0, 1.0, 0.8)
+    punctuality_rate = st.number_input("Punctuality rate", 0.5, 1.0, 0.94, step=0.01, format="%.2f")
+    docs_compliance = st.number_input("Docs compliance", 0.0, 1.0, 0.8, step=0.01, format="%.2f")
     safety_incidents = st.number_input("Safety incidents (last year)", 0, 10, 1)
     years_active = st.number_input("Years active", 1.0, 25.0, 10.0)
 
