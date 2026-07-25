@@ -8,6 +8,7 @@ Run from the Colab launch cell, e.g.:
 import streamlit as st
 import joblib
 import os
+import pandas as pd
 
 import db
 import auth
@@ -262,6 +263,68 @@ def render_user_dashboard():
     ui_theme.render_footer()
 
 
+def render_home_dashboard():
+    ui_theme.render_header(
+        "FreightQuote AI",
+        "Home — KPI Overview",
+        right_label=f"Welcome, {st.session_state.username}",
+    )
+
+    conn = db.get_conn()
+    total_queries = conn.execute("SELECT COUNT(*) AS c FROM copilot_logs").fetchone()["c"]
+    total_users = conn.execute("SELECT COUNT(*) AS c FROM users").fetchone()["c"]
+    champions = conn.execute(
+        "SELECT agent_name, algorithm, metric_name, metric_value FROM ml_models WHERE is_champion = 1"
+    ).fetchall()
+    conn.close()
+
+    champ_by_agent = {row["agent_name"]: row for row in champions}
+    trained_count = len(champ_by_agent)
+
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        ui_theme.metric_card("Agents Trained", f"{trained_count}/3", "🤖")
+    with col2:
+        ui_theme.metric_card("Copilot Queries", str(total_queries), "💬")
+    with col3:
+        ui_theme.metric_card("Registered Users", str(total_users), "👥")
+    with col4:
+        llm_status = "Active" if llm.is_llm_active() else "Fallback"
+        ui_theme.metric_card("Copilot Mode", llm_status, "⚡")
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### Champion Model Performance")
+    if not champ_by_agent:
+        st.info("No models trained yet. Run train_ml_freight.train_all_agents() in the notebook first.")
+    else:
+        mcol1, mcol2, mcol3 = st.columns(3)
+        for col, agent_name, icon in zip(
+            (mcol1, mcol2, mcol3),
+            ("Agent 1: Pricing", "Agent 2: Route Delay", "Agent 3: Carrier Audit"),
+            ("💰", "🧭", "✅"),
+        ):
+            with col:
+                row = champ_by_agent.get(agent_name)
+                if row:
+                    ui_theme.metric_card(
+                        f"{agent_name} ({row['algorithm']})",
+                        f"{row['metric_name']} {row['metric_value']:.3f}",
+                        icon,
+                    )
+                else:
+                    ui_theme.metric_card(agent_name, "Not trained", icon)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("### Indian Port Coverage")
+    port_df = pd.DataFrame([
+        {"Port": "Jawaharlal Nehru Port (Mumbai)", "Code": "JNPT", "Region": "West Coast"},
+        {"Port": "Mundra Port", "Code": "MUNDRA", "Region": "West Coast (Gujarat)"},
+        {"Port": "Chennai Port", "Code": "CHENNAI", "Region": "East Coast"},
+        {"Port": "Cochin Port", "Code": "COCHIN", "Region": "South-West Coast (Kerala)"},
+    ])
+    st.dataframe(port_df, use_container_width=True, hide_index=True)
+
+
 # ------------------------------------------------------------------
 # Agent pages
 # ------------------------------------------------------------------
@@ -434,7 +497,7 @@ def main():
     st.sidebar.markdown(f"User: **{st.session_state.username}**  \n[{st.session_state.role}]")
     st.sidebar.markdown("<br>", unsafe_allow_html=True)
 
-    pages = ["💬 AI Copilot", "$ Agent 1: Pricing", "🧭 Agent 2: Route/Weather", "✅ Agent 3: Carrier Audit",
+    pages = ["🏠 Home", "💬 AI Copilot", "$ Agent 1: Pricing", "🧭 Agent 2: Route/Weather", "✅ Agent 3: Carrier Audit",
              "🛡️ Admin Dashboard", "🚪 Sign Out"]
 
     if "nav_choice" not in st.session_state or st.session_state.nav_choice not in pages:
@@ -455,7 +518,9 @@ def main():
 
     choice = st.session_state.nav_choice
 
-    if choice == "💬 AI Copilot":
+    if choice == "🏠 Home":
+        render_home_dashboard()
+    elif choice == "💬 AI Copilot":
         render_ai_copilot()
     elif choice == "$ Agent 1: Pricing":
         render_agent1_pricing()
