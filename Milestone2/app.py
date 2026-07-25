@@ -19,6 +19,30 @@ st.set_page_config(page_title="FreightQuote AI", page_icon="⚡", layout="wide")
 ui_theme.inject_css()
 db.init_db()
 
+# ------------------------------------------------------------------
+# Read secrets from the OS environment (Step 3 of the notebook exports
+# them here specifically because `streamlit run app.py` launches this
+# file in its own separate process — it does NOT share the notebook's
+# kernel memory, so auth.configure() must be called again, in-process,
+# right here, or JWT_SECRET_KEY stays None and jwt.encode(...) raises
+# TypeError: Expected a string value.
+# ------------------------------------------------------------------
+JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+ADMIN_EMAIL_ID = os.environ.get("ADMIN_EMAIL_ID", "infosys@ai")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin@123")
+EMAIL_ID = os.environ.get("EMAIL_ID")
+EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+
+if not JWT_SECRET_KEY:
+    st.error(
+        "🚫 JWT_SECRET_KEY is not set. Add it as a Colab Secret and re-run the "
+        "notebook's Step 3 (secrets) and Step 8 (launch) cells before opening this app."
+    )
+    st.stop()
+
+auth.configure(jwt_secret=JWT_SECRET_KEY, email_id=EMAIL_ID, email_password=EMAIL_PASSWORD)
+db.seed_admin(admin_email=ADMIN_EMAIL_ID, admin_password_hash=auth.hash_password(ADMIN_PASSWORD))
+
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 
 # ------------------------------------------------------------------
