@@ -19,6 +19,30 @@ st.set_page_config(page_title="FreightQuote AI", page_icon="⚡", layout="wide")
 ui_theme.inject_css()
 db.init_db()
 
+# ------------------------------------------------------------------
+# IMPORTANT: `streamlit run app.py` launches this file in its OWN Python
+# process, completely separate from the Colab notebook's kernel. Any
+# auth.configure(...) call made inside the notebook does NOT carry over here
+# — that only set variables in the notebook's memory. Secrets must instead
+# be passed via OS environment variables (which the streamlit subprocess
+# DOES inherit from whatever launched it), and read here directly.
+# The Colab launch cell sets these with os.environ[...] = ... before
+# calling subprocess.Popen(["streamlit", "run", "app.py", ...]).
+# ------------------------------------------------------------------
+JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY") or "dev-insecure-secret-change-me"
+ADMIN_EMAIL_ID = os.environ.get("ADMIN_EMAIL_ID", "infosys@ai")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin@123")
+EMAIL_ID = os.environ.get("EMAIL_ID")
+EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
+
+if JWT_SECRET_KEY == "dev-insecure-secret-change-me":
+    print("⚠️  JWT_SECRET_KEY not found in environment — using an insecure dev "
+          "fallback. Set it as a Colab Secret and export it via os.environ "
+          "before launching streamlit (see Step 8 of the notebook).")
+
+auth.configure(jwt_secret=JWT_SECRET_KEY, email_id=EMAIL_ID, email_password=EMAIL_PASSWORD)
+db.seed_admin(admin_email=ADMIN_EMAIL_ID, admin_password_hash=auth.hash_password(ADMIN_PASSWORD))
+
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 
 # ------------------------------------------------------------------
