@@ -1,6 +1,8 @@
 # FreightQuote AI — Milestone 2
 Full-Stack AI/ML Integration & Advanced Security Engine
 
+**Repository:** https://github.com/Kavyashree1203/Infosys_FreightQuote_AI/tree/main/Milestone2
+
 ## What Milestone 2 adds on top of Milestone 1
 Milestone 1 delivered the User Authentication module — JWT session handling, a
 Streamlit login UI, SQLite credential storage, and Gmail-based OTP verification.
@@ -54,12 +56,15 @@ each agent's independent take, and a structured JSON audit action.
 | Cochin Port | COCHIN | South-West Coast (Kerala) |
 
 ## How to run
-1. Open `FreightQuote_AI_Milestone2.ipynb` in Google Colab.
+1. Open `FreightQuote_AI_Milestone2.ipynb` in Google Colab (or open it directly from
+   the GitHub repo: **Kavyashree1203/Infosys_FreightQuote_AI → Milestone2**).
 2. **Runtime → Change runtime type → T4 GPU → Save.**
-3. Add the Colab Secrets listed below (🔑 icon in the left sidebar), toggling
+3. Run Step 1 — it clones `Infosys_FreightQuote_AI` from GitHub and `cd`s into
+   `Milestone2/` automatically. No manual Drive path editing needed.
+4. Add the Colab Secrets listed below (🔑 icon in the left sidebar), toggling
    notebook access ON for each.
-4. Run all cells top to bottom. The last cell prints the public ngrok URL.
-5. Sign in with your `ADMIN_EMAIL_ID` / `ADMIN_PASSWORD` secret (or the default
+5. Run all cells top to bottom. The last cell prints the public ngrok URL.
+6. Sign in with your `ADMIN_EMAIL_ID` / `ADMIN_PASSWORD` secret (or the default
    `infosys@ai` / `admin@123` if those secrets aren't set).
 
 ### Colab Secrets setup
