@@ -182,13 +182,19 @@ def render_auth_screens():
                         ok2, msg2 = auth.reset_password_by_username(
                             st.session_state["fp_question_user"], new_pw
                         )
-                        st.success(msg2) if ok2 else st.error(msg2)
+                        if ok2:
+                            st.success(msg2)
+                        else:
+                            st.error(msg2)
 
         else:  # Email OTP
             fp_email = st.text_input("Registered email *", key="fp_email")
             if st.button("Send OTP", key="fp_send_otp"):
                 ok, msg = auth.request_otp(fp_email, purpose="reset")
-                st.info(msg) if ok else st.warning(msg)
+                if ok:
+                    st.info(msg)
+                else:
+                    st.warning(msg)
 
             otp_code = st.text_input("Enter OTP *", key="fp_otp")
             new_pw = st.text_input("New Password *", type="password", key="fp_new_pw_otp")
@@ -201,7 +207,10 @@ def render_auth_screens():
                     st.error(msg_otp)
                 else:
                     ok_reset, msg_reset = auth.reset_password(fp_email, new_pw)
-                    st.success(msg_reset) if ok_reset else st.error(msg_reset)
+                    if ok_reset:
+                        st.success(msg_reset)
+                    else:
+                        st.error(msg_reset)
 
         st.markdown("</div>", unsafe_allow_html=True)
         ui_theme.card_end()
