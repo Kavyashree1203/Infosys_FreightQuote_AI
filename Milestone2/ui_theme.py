@@ -91,6 +91,13 @@ CUSTOM_CSS = f"""
         border-radius: 8px !important;
         border: none !important;
     }}
+    /* override the browser's default red/blue focus outline with a theme glow */
+    div[data-testid="stTextInput"] input:focus,
+    div[data-testid="stNumberInput"] input:focus,
+    div[data-baseweb="select"] > div:focus-within {{
+        outline: none !important;
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.4) !important;
+    }}
 
     /* ---- primary action buttons: gradient pill with lift + glow ---- */
     div.stButton > button,
