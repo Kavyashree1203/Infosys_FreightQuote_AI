@@ -92,18 +92,40 @@ CUSTOM_CSS = f"""
         border: none !important;
     }}
 
-    /* ---- Sign In / Sign Up primary buttons: dark pill ---- */
-    div.stButton > button {{
-        background-color: {BTN_DARK_BG};
-        color: {TEXT_LIGHT};
-        border: 1px solid {CARD_BORDER};
-        border-radius: 8px;
-        font-weight: 600;
-        padding: 10px 20px;
+    /* ---- primary action buttons: gradient pill with lift + glow ---- */
+    div.stButton > button,
+    div.stFormSubmitButton > button,
+    button[kind="primary"],
+    button[kind="secondary"] {{
+        background: {GRADIENT};
+        background-size: 160% 160%;
+        color: #ffffff !important;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        padding: 11px 26px;
+        box-shadow: 0 4px 14px rgba(124, 92, 255, 0.35);
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background-position 0.4s ease;
     }}
-    div.stButton > button:hover {{
-        border-color: #7c5cff;
-        color: #ffffff;
+    div.stButton > button:hover,
+    div.stFormSubmitButton > button:hover,
+    button[kind="primary"]:hover,
+    button[kind="secondary"]:hover {{
+        transform: translateY(-2px) scale(1.02);
+        box-shadow: 0 8px 22px rgba(34, 211, 238, 0.45);
+        background-position: 100% 0%;
+        color: #ffffff !important;
+    }}
+    div.stButton > button:active,
+    div.stFormSubmitButton > button:active {{
+        transform: translateY(0) scale(0.98);
+        box-shadow: 0 3px 10px rgba(124, 92, 255, 0.3);
+    }}
+    div.stButton > button:focus,
+    div.stFormSubmitButton > button:focus {{
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.35), 0 4px 14px rgba(124, 92, 255, 0.35);
     }}
 
     /* ---- top nav tabs styled as gradient pill buttons ---- */
