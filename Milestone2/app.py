@@ -19,30 +19,6 @@ st.set_page_config(page_title="FreightQuote AI", page_icon="⚡", layout="wide")
 ui_theme.inject_css()
 db.init_db()
 
-# ------------------------------------------------------------------
-# IMPORTANT: `streamlit run app.py` launches this file in its OWN Python
-# process, completely separate from the Colab notebook's kernel. Any
-# auth.configure(...) call made inside the notebook does NOT carry over here
-# — that only set variables in the notebook's memory. Secrets must instead
-# be passed via OS environment variables (which the streamlit subprocess
-# DOES inherit from whatever launched it), and read here directly.
-# The Colab launch cell sets these with os.environ[...] = ... before
-# calling subprocess.Popen(["streamlit", "run", "app.py", ...]).
-# ------------------------------------------------------------------
-JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY") or "dev-insecure-secret-change-me"
-ADMIN_EMAIL_ID = os.environ.get("ADMIN_EMAIL_ID", "infosys@ai")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin@123")
-EMAIL_ID = os.environ.get("EMAIL_ID")
-EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")
-
-if JWT_SECRET_KEY == "dev-insecure-secret-change-me":
-    print("⚠️  JWT_SECRET_KEY not found in environment — using an insecure dev "
-          "fallback. Set it as a Colab Secret and export it via os.environ "
-          "before launching streamlit (see Step 8 of the notebook).")
-
-auth.configure(jwt_secret=JWT_SECRET_KEY, email_id=EMAIL_ID, email_password=EMAIL_PASSWORD)
-db.seed_admin(admin_email=ADMIN_EMAIL_ID, admin_password_hash=auth.hash_password(ADMIN_PASSWORD))
-
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 
 # ------------------------------------------------------------------
@@ -199,16 +175,14 @@ def render_auth_screens():
 # Agent pages
 # ------------------------------------------------------------------
 def render_agent1_pricing():
-    ui_theme.card_start("💰 Agent 1: Dynamic Pricing")
+    st.subheader("💰 Agent 1: Dynamic Pricing")
     path = os.path.join(MODELS_DIR, "agent1_pricing_champion.joblib")
     if not os.path.exists(path):
         st.warning("Model not trained yet. Run train_ml_freight.train_agent1_pricing() in the notebook.")
-        ui_theme.card_end()
         return
     bundle = joblib.load(path)
     model, scaler, features = bundle["model"], bundle["scaler"], bundle["features"]
 
-    st.markdown('<div class="fq-inner-box">', unsafe_allow_html=True)
     distance_km = st.number_input("Distance (km)", 50.0, 15000.0, 5000.0)
     weight_kg = st.number_input("Weight (kg)", 10.0, 25000.0, 1000.0)
     congestion_level = st.slider("Congestion level (0-1)", 0.0, 1.0, 0.5)
@@ -227,21 +201,17 @@ def render_agent1_pricing():
             "route": "Custom Route", "cost": round(float(pred), 2),
             "driver": "high congestion" if congestion_level > 0.6 else "normal conditions",
         }
-    st.markdown("</div>", unsafe_allow_html=True)
-    ui_theme.card_end()
 
 
 def render_agent2_route():
-    ui_theme.card_start("🧭 Agent 2: Route Delay / Weather")
+    st.subheader("🧭 Agent 2: Route Delay / Weather")
     path = os.path.join(MODELS_DIR, "agent2_route_delay_champion.joblib")
     if not os.path.exists(path):
         st.warning("Model not trained yet. Run train_ml_freight.train_agent2_route_delay() in the notebook.")
-        ui_theme.card_end()
         return
     bundle = joblib.load(path)
     model, scaler, features = bundle["model"], bundle["scaler"], bundle["features"]
 
-    st.markdown('<div class="fq-inner-box">', unsafe_allow_html=True)
     congestion = st.slider("Congestion", 0.0, 1.0, 0.6)
     weather_risk = st.slider("Weather risk", 0.0, 1.0, 0.4)
     canal_queue = st.checkbox("Canal queue present?")
@@ -261,21 +231,17 @@ def render_agent2_route():
             "congestion": "high" if congestion > 0.6 else "moderate",
             "canal_queue": canal_queue,
         }
-    st.markdown("</div>", unsafe_allow_html=True)
-    ui_theme.card_end()
 
 
 def render_agent3_carrier():
-    ui_theme.card_start("✅ Agent 3: Carrier Audit")
+    st.subheader("✅ Agent 3: Carrier Audit")
     path = os.path.join(MODELS_DIR, "agent3_carrier_audit_champion.joblib")
     if not os.path.exists(path):
         st.warning("Model not trained yet. Run train_ml_freight.train_agent3_carrier_audit() in the notebook.")
-        ui_theme.card_end()
         return
     bundle = joblib.load(path)
     model, scaler, features = bundle["model"], bundle["scaler"], bundle["features"]
 
-    st.markdown('<div class="fq-inner-box">', unsafe_allow_html=True)
     carrier_name = st.text_input("Carrier name", "Maersk")
     punctuality_rate = st.slider("Punctuality rate", 0.5, 1.0, 0.94)
     docs_compliance = st.slider("Docs compliance", 0.0, 1.0, 0.8)
@@ -296,12 +262,10 @@ def render_agent3_carrier():
             "punctuality_rate": round(punctuality_rate * 100, 1),
             "compliance_risk": risk,
         }
-    st.markdown("</div>", unsafe_allow_html=True)
-    ui_theme.card_end()
 
 
 def render_ai_copilot():
-    ui_theme.card_start("💬 AI Copilot — Powered by Qwen-2.5-3B")
+    st.subheader(f"💬 AI Copilot — Powered by Qwen-2.5-3B")
     if llm.is_llm_active():
         st.success("⚡ LLM Active on GPU")
     else:
@@ -316,7 +280,6 @@ def render_ai_copilot():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = []
 
-    st.markdown('<div class="fq-inner-box">', unsafe_allow_html=True)
     for turn in st.session_state.chat_history:
         st.markdown(f"🙋 **You:** {turn['q']}")
         st.markdown(f"⚡ **Copilot:** {turn['a']}")
@@ -325,14 +288,14 @@ def render_ai_copilot():
 
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("💬 Ask") and prompt:
+        if st.button("Ask") and prompt:
             answer = llm.ask_copilot(prompt, context)
             st.session_state.chat_history.append({"q": prompt, "a": answer})
             db.log_copilot_query(st.session_state.username, prompt, answer)
             st.rerun()
 
     with col2:
-        if st.button("🔍 Debate View"):
+        if st.button("Debate View"):
             debate = llm.debate_view(
                 st.session_state.get("agent1_output", {}),
                 st.session_state.get("agent2_output", {}),
@@ -347,8 +310,6 @@ def render_ai_copilot():
             )
             st.markdown("**Structured JSON Audit Action:**")
             st.code(llm.audit_action_to_json_string(audit), language="json")
-    st.markdown("</div>", unsafe_allow_html=True)
-    ui_theme.card_end()
 
 
 # ------------------------------------------------------------------
