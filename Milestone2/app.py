@@ -410,10 +410,28 @@ def main():
 
     st.sidebar.markdown("### ⚡ FreightQuote AI")
     st.sidebar.markdown(f"User: **{st.session_state.username}**  \n[{st.session_state.role}]")
+    st.sidebar.markdown("<br>", unsafe_allow_html=True)
+
     pages = ["💬 AI Copilot", "$ Agent 1: Pricing", "🧭 Agent 2: Route/Weather", "✅ Agent 3: Carrier Audit",
              "🛡️ Admin Dashboard", "🚪 Sign Out"]
 
-    choice = st.sidebar.radio("Navigate", pages, label_visibility="collapsed")
+    if "nav_choice" not in st.session_state or st.session_state.nav_choice not in pages:
+        st.session_state.nav_choice = pages[0]
+
+    for page in pages:
+        if page == "🚪 Sign Out":
+            if st.sidebar.button(page, key="nav_sign_out", use_container_width=True):
+                _sign_out()
+            continue
+        is_active = st.session_state.nav_choice == page
+        if st.sidebar.button(
+            page, key=f"nav_{page}", use_container_width=True,
+            type="primary" if is_active else "secondary",
+        ):
+            st.session_state.nav_choice = page
+            st.rerun()
+
+    choice = st.session_state.nav_choice
 
     if choice == "💬 AI Copilot":
         render_ai_copilot()
@@ -425,8 +443,6 @@ def main():
         render_agent3_carrier()
     elif choice == "🛡️ Admin Dashboard":
         admin_dash.render_admin_dashboard(st.session_state.username)
-    elif choice == "🚪 Sign Out":
-        _sign_out()
 
 
 if __name__ == "__main__":
