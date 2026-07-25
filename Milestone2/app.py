@@ -210,8 +210,9 @@ def render_auth_screens():
 
 
 def _sign_out():
-    for key in ["logged_in", "username", "role", "token", "email", "chat_history"]:
+    for key in ["logged_in", "username", "role", "token", "email"]:
         st.session_state[key] = False if key == "logged_in" else None
+    st.session_state.chat_history = []
     st.rerun()
 
 
@@ -363,7 +364,7 @@ def render_ai_copilot():
         **st.session_state.get("agent3_output", {}),
     }
 
-    if "chat_history" not in st.session_state:
+    if not isinstance(st.session_state.get("chat_history"), list):
         st.session_state.chat_history = []
 
     for turn in st.session_state.chat_history:
