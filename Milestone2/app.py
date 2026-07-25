@@ -334,7 +334,12 @@ def render_agent3_carrier():
 
 
 def render_ai_copilot():
-    st.subheader(f"💬 AI Copilot — Powered by Qwen-2.5-3B")
+    ui_theme.render_header(
+        "FreightQuote AI",
+        "AI Copilot — Powered by Qwen-2.5-3B",
+        right_label=f"Welcome, {st.session_state.username}",
+    )
+
     if llm.is_llm_active():
         st.success("⚡ LLM Active on GPU")
     else:
@@ -350,8 +355,13 @@ def render_ai_copilot():
         st.session_state.chat_history = []
 
     for turn in st.session_state.chat_history:
-        st.markdown(f"🙋 **You:** {turn['q']}")
-        st.markdown(f"⚡ **Copilot:** {turn['a']}")
+        st.markdown(
+            f'<div class="fq-chat-row fq-chat-user"><div class="fq-bubble fq-bubble-user">'
+            f'<div class="fq-bubble-label">You</div>{turn["q"]}</div></div>'
+            f'<div class="fq-chat-row fq-chat-bot"><div class="fq-bubble fq-bubble-bot">'
+            f'<div class="fq-bubble-label">Copilot</div>{turn["a"]}</div></div>',
+            unsafe_allow_html=True,
+        )
 
     prompt = st.text_input("Ask the Copilot", placeholder="e.g. Why is port congestion increasing freight risk?")
 
