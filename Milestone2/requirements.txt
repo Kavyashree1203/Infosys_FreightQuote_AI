@@ -1,13 +1,16 @@
-streamlit==1.38.0
-pyjwt==2.9.0
-bcrypt==4.2.0
-scikit-learn==1.5.1
-pandas==2.2.2
-numpy==1.26.4
-joblib==1.4.2
-kagglehub==0.3.0
-transformers==4.44.2
-accelerate==0.33.0
-bitsandbytes==0.43.3
-torch --index-url https://download.pytorch.org/whl/cu121
-pyngrok==7.2.0
+# NOTE: numpy, pandas, torch are intentionally NOT listed here.
+# Colab's runtime already ships recent, GPU-matched versions of these —
+# pinning older versions (e.g. numpy==1.26.4) forces pip to downgrade them,
+# which breaks numpy>=2 packages Colab preinstalls (jax, google-adk, etc.)
+# and can even wreck the pre-linked CUDA torch build. Only install what's
+# actually missing from the base Colab image.
+streamlit>=1.38
+pyjwt>=2.9
+bcrypt>=4.2
+scikit-learn>=1.4
+joblib>=1.4
+kagglehub>=0.3
+transformers>=4.44
+accelerate>=0.33
+bitsandbytes>=0.43
+pyngrok>=7.2
