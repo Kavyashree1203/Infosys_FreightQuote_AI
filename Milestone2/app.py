@@ -53,6 +53,7 @@ for key, default in [
     ("username", None),
     ("role", None),
     ("token", None),
+    ("email", None),
 ]:
     if key not in st.session_state:
         st.session_state[key] = default
@@ -91,6 +92,7 @@ def render_auth_screens():
                 st.session_state.username = user["username"]
                 st.session_state.role = user["role"]
                 st.session_state.token = token
+                st.session_state.email = user["email"]
                 st.success(msg)
                 st.rerun()
             else:
@@ -191,6 +193,49 @@ def render_auth_screens():
 
         st.markdown("</div>", unsafe_allow_html=True)
         ui_theme.card_end()
+
+    ui_theme.render_footer()
+
+
+def _sign_out():
+    for key in ["logged_in", "username", "role", "token", "email", "chat_history"]:
+        st.session_state[key] = False if key == "logged_in" else None
+    st.rerun()
+
+
+# ------------------------------------------------------------------
+# Simple welcome dashboard shown to non-admin users after login
+# (Logistics Manager / Carrier Auditor). Admins go straight to the
+# full sidebar app with the ML agents + Admin Dashboard instead.
+# ------------------------------------------------------------------
+def render_user_dashboard():
+    col_left, col_mid, col_right = st.columns([1, 4, 1])
+    with col_left:
+        st.button("Dashboard", key="user_dash_nav_btn")
+    with col_right:
+        if st.button("Logout", key="user_dash_logout_btn"):
+            _sign_out()
+
+    ui_theme.render_brand_header()
+
+    ui_theme.card_start("User Dashboard")
+    st.markdown(
+        f'<div class="fq-inner-box" style="background: rgba(34,211,238,0.06);">'
+        f'<strong>Welcome, {st.session_state.username}</strong></div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.write("You have successfully logged in.")
+    st.markdown(
+        '<div style="background:#123524;border:1px solid #1f6b3f;border-radius:8px;'
+        'padding:14px 18px;color:#4ade80;font-weight:600;margin:14px 0;">'
+        'JWT Authentication Successful.</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown("### Account Details")
+    st.markdown(f"**Username:** {st.session_state.username}")
+    st.markdown(f"**Email:** {st.session_state.get('email') or 'Not available'}")
+    ui_theme.card_end()
 
     ui_theme.render_footer()
 
@@ -346,12 +391,17 @@ def main():
 
     is_admin = st.session_state.role.lower() == "admin"
 
+    # Non-admin roles (Logistics Manager / Carrier Auditor) land on the
+    # simple welcome dashboard. Only Admin gets the full sidebar app with
+    # the ML agents, AI Copilot, and Admin Dashboard.
+    if not is_admin:
+        render_user_dashboard()
+        return
+
     st.sidebar.markdown("### ⚡ FreightQuote AI")
     st.sidebar.markdown(f"User: **{st.session_state.username}**  \n[{st.session_state.role}]")
-    pages = ["💬 AI Copilot", "$ Agent 1: Pricing", "🧭 Agent 2: Route/Weather", "✅ Agent 3: Carrier Audit"]
-    if is_admin:
-        pages.append("🛡️ Admin Dashboard")
-    pages.append("🚪 Sign Out")
+    pages = ["💬 AI Copilot", "$ Agent 1: Pricing", "🧭 Agent 2: Route/Weather", "✅ Agent 3: Carrier Audit",
+             "🛡️ Admin Dashboard", "🚪 Sign Out"]
 
     choice = st.sidebar.radio("Navigate", pages, label_visibility="collapsed")
 
@@ -363,12 +413,10 @@ def main():
         render_agent2_route()
     elif choice == "✅ Agent 3: Carrier Audit":
         render_agent3_carrier()
-    elif choice == "🛡️ Admin Dashboard" and is_admin:
+    elif choice == "🛡️ Admin Dashboard":
         admin_dash.render_admin_dashboard(st.session_state.username)
     elif choice == "🚪 Sign Out":
-        for key in ["logged_in", "username", "role", "token", "chat_history"]:
-            st.session_state[key] = False if key == "logged_in" else None
-        st.rerun()
+        _sign_out()
 
 
 if __name__ == "__main__":
