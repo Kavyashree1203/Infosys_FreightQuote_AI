@@ -15,28 +15,24 @@ import ui_theme
 def render_admin_dashboard(current_username: str):
     ui_theme.render_header("FreightQuote AI", "Admin Control Panel", right_label=current_username)
 
-    tab1, tab2, tab3 = st.tabs(["User Management", "LLM Activity Monitor", "ML Model Card"])
+    tab1, tab2, tab3 = st.tabs(["👥 User Management", "🧠 LLM Activity Monitor", "📊 ML Model Card"])
 
     with tab1:
-        ui_theme.card_start("👥 User Management")
         _render_user_management()
-        ui_theme.card_end()
 
     with tab2:
-        ui_theme.card_start("🧠 LLM Activity Monitor")
         _render_llm_activity_monitor()
-        ui_theme.card_end()
 
     with tab3:
-        ui_theme.card_start("📊 ML Model Card — Training Transparency")
         _render_ml_model_card()
-        ui_theme.card_end()
 
 
 # ------------------------------------------------------------------
 # Tab 1: User Management (Add / Delete / Unlock)
 # ------------------------------------------------------------------
 def _render_user_management():
+    st.subheader("👥 User Management")
+
     with st.expander("➕ Add New User"):
         with st.form("add_user_form", clear_on_submit=True):
             new_username = st.text_input("Username")
@@ -56,8 +52,7 @@ def _render_user_management():
                     else:
                         st.error(msg)
 
-    st.markdown('<div class="fq-inner-box" style="margin-top:16px">', unsafe_allow_html=True)
-    st.markdown("**Registered Users**")
+    st.divider()
 
     conn = db.get_conn()
     users = conn.execute("SELECT * FROM users ORDER BY created_at DESC").fetchall()
@@ -71,7 +66,7 @@ def _render_user_management():
 
         needs_unlock = (u["account_status"] == "locked") or (u["failed_attempts"] and u["failed_attempts"] >= 3)
         if needs_unlock:
-            if col4.button("🔓 Unlock", key=f"unlock_{u['id']}"):
+            if col4.button("Unlock", key=f"unlock_{u['id']}"):
                 conn = db.get_conn()
                 conn.execute(
                     "UPDATE users SET failed_attempts = 0, lock_until = NULL, "
@@ -83,7 +78,7 @@ def _render_user_management():
                 st.success("✅ User account unlocked successfully.")
                 st.rerun()
 
-        if col5.button("🗑️", key=f"delete_{u['id']}"):
+        if col5.button("Delete", key=f"delete_{u['id']}"):
             current = st.session_state.get("username")
             if u["username"] == current:
                 st.error("You cannot delete the account you're logged in as.")
@@ -95,13 +90,13 @@ def _render_user_management():
                 st.success(f"Deleted user '{u['username']}'.")
                 st.rerun()
 
-    st.markdown("</div>", unsafe_allow_html=True)
-
 
 # ------------------------------------------------------------------
 # Tab 2: LLM Activity Monitor
 # ------------------------------------------------------------------
 def _render_llm_activity_monitor():
+    st.subheader("🧠 LLM Activity Monitor")
+
     conn = db.get_conn()
     logs = conn.execute("SELECT username, COUNT(*) as queries FROM copilot_logs GROUP BY username").fetchall()
     total = conn.execute("SELECT COUNT(*) as c FROM copilot_logs").fetchone()["c"]
@@ -129,6 +124,8 @@ def _render_llm_activity_monitor():
 # Tab 3: ML Model Card (training transparency)
 # ------------------------------------------------------------------
 def _render_ml_model_card():
+    st.subheader("📊 ML Model Card — Training Transparency")
+
     conn = db.get_conn()
     rows = conn.execute(
         "SELECT * FROM ml_models WHERE is_champion = 1 ORDER BY agent_name"
