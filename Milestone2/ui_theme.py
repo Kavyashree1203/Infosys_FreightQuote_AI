@@ -128,6 +128,20 @@ CUSTOM_CSS = f"""
         box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.35), 0 4px 14px rgba(124, 92, 255, 0.35);
     }}
 
+    /* ---- sidebar nav buttons: active page stands out from the rest ---- */
+    section[data-testid="stSidebar"] button[kind="primary"] {{
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.55), 0 8px 22px rgba(34, 211, 238, 0.45);
+    }}
+    section[data-testid="stSidebar"] button[kind="secondary"] {{
+        opacity: 0.82;
+    }}
+    section[data-testid="stSidebar"] button[kind="secondary"]:hover {{
+        opacity: 1;
+    }}
+    section[data-testid="stSidebar"] div.stButton {{
+        margin-bottom: 6px;
+    }}
+
     /* ---- top nav tabs styled as gradient pill buttons ---- */
     .stTabs [data-baseweb="tab-list"] {{
         gap: 14px;
@@ -155,6 +169,83 @@ CUSTOM_CSS = f"""
         border-radius: 12px;
         padding: 18px;
         text-align: center;
+    }}
+
+    /* ---- sidebar navigation, styled as pill-button nav rows ---- */
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] {{
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 6px;
+    }}
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label {{
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 11px 16px;
+        border-radius: 10px;
+        border: 1px solid {CARD_BORDER};
+        background-color: {CARD_BG};
+        cursor: pointer;
+        transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
+    }}
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label:hover {{
+        border-color: #7c5cff;
+        box-shadow: 0 0 12px rgba(124, 92, 255, 0.25);
+    }}
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label:has(input:checked) {{
+        background: {GRADIENT};
+        border-color: transparent;
+        box-shadow: 0 4px 14px rgba(124, 92, 255, 0.4);
+    }}
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label:has(input:checked) p {{
+        color: #ffffff !important;
+        font-weight: 700;
+    }}
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] label p {{
+        margin: 0;
+        font-size: 0.95rem;
+    }}
+    section[data-testid="stSidebar"] div[data-testid="stRadio"] input[type="radio"] {{
+        accent-color: #7c5cff;
+    }}
+
+    /* ---- AI Copilot chat bubbles ---- */
+    .fq-chat-row {{
+        display: flex;
+        margin: 10px 0;
+    }}
+    .fq-chat-row.fq-chat-user {{
+        justify-content: flex-end;
+    }}
+    .fq-chat-row.fq-chat-bot {{
+        justify-content: flex-start;
+    }}
+    .fq-bubble {{
+        max-width: 75%;
+        padding: 12px 16px;
+        border-radius: 14px;
+        line-height: 1.5;
+        font-size: 0.95rem;
+    }}
+    .fq-bubble-user {{
+        background: {GRADIENT};
+        color: #ffffff;
+        border-bottom-right-radius: 4px;
+    }}
+    .fq-bubble-bot {{
+        background-color: {CARD_BG};
+        border: 1px solid {CARD_BORDER};
+        color: {TEXT_LIGHT};
+        border-bottom-left-radius: 4px;
+    }}
+    .fq-bubble-label {{
+        font-size: 0.7rem;
+        opacity: 0.75;
+        margin-bottom: 4px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
     }}
 
     /* ---- fq-header used on internal dashboards (admin, agent pages) --- */
