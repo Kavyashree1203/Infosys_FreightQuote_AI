@@ -1,0 +1,26 @@
+# Secrets
+.env
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+venv/
+.venv/
+*.egg-info/
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+
+# Model weight caches (large, should not be committed)
+models/
+*.bin
+*.safetensors
